@@ -54,7 +54,7 @@ python bot.py
 Required env vars (see `.env.example`):
 - `BOT_TOKEN` — from @BotFather (`/newbot`; username must end in `bot`)
 - `GEMINI_API_KEY` — free key from https://aistudio.google.com/apikey
-- `GEMINI_MODEL` — defaults to `gemini-2.5-flash`
+- `GEMINI_MODEL` — defaults to `gemini-1.5-flash`
 - `BASE_URL` — your deployed HTTPS base URL (used for `log_url` and the
   self-ping)
 
@@ -97,12 +97,12 @@ Also test by hand:
 
 ## Checklist before you walk away
 
-- [ ] Bot replies to a fresh message with exactly one JSON object
-- [ ] `answer` shape matches whatever the message asked for
-- [ ] `log_url` is wget-able and reflects the run you just did
-- [ ] Multi-turn: bot replies to every message, not just the last
-- [ ] Reply arrives well under 300s even on a hard question
-- [ ] Repo is public; no secrets committed (tokens only in env vars)
-- [ ] Host stays awake (self-ping working)
-- [ ] `GEMINI_API_KEY` will still be valid weeks from now (check free-tier quota)
-- [ ] Registered on SEEK: `https://github.com/you/repo, your_bot_username`
+- [ x] Bot replies to a fresh message with exactly one JSON object
+- [x ] `answer` shape matches whatever the message asked for
+- [ x] `log_url` is wget-able and reflects the run you just did
+- [ x] Multi-turn: bot replies to every message, not just the last
+- [ x] Reply arrives well under 300s even on a hard question
+- [x ] Repo is public; no secrets committed (tokens only in env vars)
+- [ x] Host stays awake (self-ping working)
+- [x] `GEMINI_API_KEY` will still be valid weeks from now (check free-tier quota)
+- [x] Registered on SEEK: `https://github.com/you/repo, your_bot_username`
