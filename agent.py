@@ -11,6 +11,9 @@ Defensive layers (per the grading guide):
   - Wall-clock deadline: past ~210s we stop giving the model new tool
     turns and force a final answer, so a late "perfect" answer never
     times out the whole question.
+  - Retry on transient errors: Gemini's free tier occasionally returns
+    503 (overloaded) or 429 (rate-limited); these are retried with
+    exponential backoff instead of failing the whole run immediately.
   - JSON extraction: strip fences, find the first balanced {...}, parse
     it. If there's no "answer" key, wrap the whole thing as one.
   - Never crash silently: any failure still returns a parseable dict.
@@ -118,6 +121,42 @@ def _history_to_contents(history: list, question: str) -> list:
     return contents
 
 
+_TRANSIENT_MARKERS = ("503", "UNAVAILABLE", "429", "RESOURCE_EXHAUSTED", "overloaded", "high demand")
+
+
+def _is_transient(err: Exception) -> bool:
+    msg = str(err)
+    return any(marker in msg for marker in _TRANSIENT_MARKERS)
+
+
+def _generate_with_retry(client, contents, config, run_id, chat_id, deadline, max_attempts=5):
+    """
+    Calls generate_content, retrying with exponential backoff on transient
+    errors (503 overloaded, 429 rate-limited) since Gemini's free tier gets
+    bursty under load. Gives up and returns None if we run past the wall-clock
+    deadline or exhaust max_attempts, so a bad run still ends in a final
+    answer instead of hanging until the grader's own timeout.
+    """
+    delay = 2
+    for attempt in range(max_attempts):
+        if time.time() > deadline:
+            return None
+        try:
+            return client.models.generate_content(model=MODEL, contents=contents, config=config)
+        except Exception as e:
+            if not _is_transient(e) or attempt == max_attempts - 1:
+                raise
+            log_event(
+                run_id,
+                chat_id,
+                "retry",
+                {"attempt": attempt, "error": str(e), "sleeping_seconds": delay},
+            )
+            time.sleep(min(delay, max(0, deadline - time.time())))
+            delay *= 2
+    return None
+
+
 def answer_question(question: str, history: list, run_id: str, chat_id) -> dict:
     """
     history: list of {"role": "user"/"assistant", "content": str} prior turns.
@@ -139,11 +178,10 @@ def answer_question(question: str, history: list, run_id: str, chat_id) -> dict:
                 system_instruction=SYSTEM_PROMPT,
                 tools=None if past_deadline else TOOLS,
             )
-            resp = client.models.generate_content(
-                model=MODEL,
-                contents=contents,
-                config=config,
-            )
+            resp = _generate_with_retry(client, contents, config, run_id, chat_id, deadline)
+            if resp is None:
+                # Exhausted retries with time still left, or ran out of time mid-retry.
+                break
 
             candidate = resp.candidates[0]
             parts = candidate.content.parts or []
