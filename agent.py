@@ -21,7 +21,7 @@ import os
 import re
 import time
 
-from google.genai import genai
+import google.genai as genai
 from google.genai import types
 
 from logger import log_event
