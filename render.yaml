@@ -8,9 +8,9 @@ services:
     envVars:
       - key: BOT_TOKEN
         sync: false
-      - key: OPENAI_API_KEY
+      - key: GEMINI_API_KEY
         sync: false
-      - key: OPENAI_MODEL
-        value: gpt-4o
+      - key: GEMINI_MODEL
+        value: gemini-2.5-flash
       - key: BASE_URL
         sync: false

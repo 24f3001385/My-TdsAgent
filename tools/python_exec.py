@@ -4,6 +4,12 @@ in a subprocess with a timeout, and returns captured stdout/stderr.
 
 This is the ONLY tool the agent gets. The model must call it to fetch and
 compute over real data instead of guessing statistics from memory.
+
+Note: this module intentionally exports ONLY run_python(). The tool-calling
+schema (what the LLM sees) lives in agent.py as RUN_PYTHON_DECLARATION,
+built in whatever format the current LLM provider needs (currently Gemini's
+google.genai.types.FunctionDeclaration). Keeping the schema out of this file
+means swapping LLM providers only requires editing agent.py.
 """
 
 import subprocess
@@ -60,28 +66,3 @@ def run_python(code: str) -> str:
         return f"Execution timed out after {TIMEOUT_SECONDS}s."
     except Exception as e:
         return f"Execution error: {e}"
-
-
-# OpenAI function-calling tool schema (Chat Completions "tools" format).
-RUN_PYTHON_TOOL_DEF = {
-    "type": "function",
-    "function": {
-        "name": "run_python",
-        "description": (
-            "Execute a Python snippet to fetch and compute over real data "
-            "(pandas, numpy, requests, BeautifulSoup are pre-imported). "
-            "Always print() the result you need to see — only stdout/stderr "
-            "is returned. Never guess a number you could compute here."
-        ),
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "string",
-                    "description": "Python code to execute. Use print() to output results.",
-                }
-            },
-            "required": ["code"],
-        },
-    },
-}

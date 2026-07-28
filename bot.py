@@ -25,6 +25,9 @@ from logger import LOG_PATH, log_event, log_url, new_run_id
 
 BOT_TOKEN = os.environ["BOT_TOKEN"]
 BASE_URL = os.environ["BASE_URL"]  # e.g. https://your-app.onrender.com
+# GEMINI_API_KEY is read directly by agent.py via os.environ — fail fast here too
+# so a missing key surfaces immediately on startup rather than on first message.
+os.environ["GEMINI_API_KEY"]
 
 TELEGRAM_API = f"https://api.telegram.org/bot{BOT_TOKEN}"
 

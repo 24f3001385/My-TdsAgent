@@ -27,11 +27,14 @@ Long polling (not a webhook) — works from any host, no HTTPS/webhook setup.
 - `bot.py` — starts uvicorn + the two background threads. Replies to
   **every** incoming text message (including multi-turn setup messages),
   always overwrites `log_url` with the real current URL.
-- `agent.py` — the agent loop against OpenAI (`gpt-4o` by default — smaller
-  models get real-world statistics wrong, see the grading guide). One tool:
-  `run_python`. Wall-clock budget (~210s) forces a final answer before the
-  grader's ~300s timeout hits. Robust JSON extraction: strips fences, finds
-  the first balanced `{...}`, wraps bare values under `"answer"` if needed.
+- `agent.py` — the agent loop against Google Gemini (`gemini-2.5-flash` by
+  default, free tier via the `google-genai` SDK). One tool: `run_python`.
+  Wall-clock budget (~210s) forces a final answer before the grader's
+  ~300s timeout hits. Robust JSON extraction: strips fences, finds the
+  first balanced `{...}`, wraps bare values under `"answer"` if needed.
+  Note: free/smaller models can get obscure real-world statistics wrong
+  (see the grading guide's test table) — lean on `run_python` actually
+  fetching real data rather than trusting the model's own knowledge.
 - `tools/exec_pandas.py` — sandboxed subprocess execution with pandas,
   numpy, requests, BeautifulSoup pre-imported.
 - `logger.py` — appends one JSON line per step (question, every tool call +
@@ -50,9 +53,8 @@ python bot.py
 
 Required env vars (see `.env.example`):
 - `BOT_TOKEN` — from @BotFather (`/newbot`; username must end in `bot`)
-- `OPENAI_API_KEY` — use a direct key, not a token that expires before
-  grading happens
-- `OPENAI_MODEL` — defaults to `gpt-4o`
+- `GEMINI_API_KEY` — free key from https://aistudio.google.com/apikey
+- `GEMINI_MODEL` — defaults to `gemini-2.5-flash`
 - `BASE_URL` — your deployed HTTPS base URL (used for `log_url` and the
   self-ping)
 
@@ -102,5 +104,5 @@ Also test by hand:
 - [ ] Reply arrives well under 300s even on a hard question
 - [ ] Repo is public; no secrets committed (tokens only in env vars)
 - [ ] Host stays awake (self-ping working)
-- [ ] `OPENAI_API_KEY` will still be valid weeks from now
+- [ ] `GEMINI_API_KEY` will still be valid weeks from now (check free-tier quota)
 - [ ] Registered on SEEK: `https://github.com/you/repo, your_bot_username`
