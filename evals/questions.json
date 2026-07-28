@@ -1,0 +1,12 @@
+[
+  {
+    "messages": [
+      "Which state has the highest maternal mortality rate based on MOSPI data? Reply with ONLY this JSON object and nothing else: {\"answer\": {\"state\": \"<state name>\"}, \"log_url\": \"<public wget-able URL to your agent's JSONL log>\"}"
+    ]
+  },
+  {
+    "messages": [
+      "What is 17 * 23? Reply with ONLY this JSON object and nothing else: {\"answer\": <number>, \"log_url\": \"<public wget-able URL to your agent's JSONL log>\"}"
+    ]
+  }
+]
