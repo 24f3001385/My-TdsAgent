@@ -21,7 +21,7 @@ import time
 from openai import OpenAI
 
 from logger import log_event
-from tools.exec_pandas import run_python, RUN_PYTHON_TOOL_DEF
+from tools.python_exec import run_python, RUN_PYTHON_TOOL_DEF
 
 MODEL = os.environ.get("OPENAI_MODEL", "gpt-4o")
 MAX_TOOL_ITERATIONS = 10
