@@ -27,7 +27,7 @@ Long polling (not a webhook) — works from any host, no HTTPS/webhook setup.
 - `bot.py` — starts uvicorn + the two background threads. Replies to
   **every** incoming text message (including multi-turn setup messages),
   always overwrites `log_url` with the real current URL.
-- `agent.py` — the agent loop against Google Gemini (`gemini-2.5-flash` by
+- `agent.py` — the agent loop against Google Gemini (`gemini-3.5-flash` by
   default, free tier via the `google-genai` SDK). One tool: `run_python`.
   Wall-clock budget (~210s) forces a final answer before the grader's
   ~300s timeout hits. Robust JSON extraction: strips fences, finds the
@@ -54,7 +54,7 @@ python bot.py
 Required env vars (see `.env.example`):
 - `BOT_TOKEN` — from @BotFather (`/newbot`; username must end in `bot`)
 - `GEMINI_API_KEY` — free key from https://aistudio.google.com/apikey
-- `GEMINI_MODEL` — defaults to `gemini-1.5-flash`
+- `GEMINI_MODEL` — defaults to `gemini-3.5-flash`
 - `BASE_URL` — your deployed HTTPS base URL (used for `log_url` and the
   self-ping)
 

@@ -27,7 +27,7 @@ from google.genai import types
 from logger import log_event
 from tools.python_exec import run_python
 
-MODEL = os.environ.get("GEMINI_MODEL", "gemini-1.5-flash")
+MODEL = os.environ.get("GEMINI_MODEL", "gemini-3.5-flash")
 MAX_TOOL_ITERATIONS = 10
 WALL_CLOCK_BUDGET_SECONDS = 210  # stay well under the grader's ~300s timeout
 
